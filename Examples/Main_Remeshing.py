@@ -36,7 +36,6 @@ crapro = np.zeros((numtip)) == 0
 tipava = np.zeros((numtip)) == 0
 error = np.zeros((t.shape[0]))
 N = 5
-fig, grid = plt.subplots()
 for step in range(N):
     p, t, moucra, roscra = rm.quaterelement( tipava, crapro, 0 )
     p6, t6, qpe = meshing.t3tot6(tipava, p, t, tipcra)
@@ -50,9 +49,9 @@ for step in range(N):
     if step < N:
         Sigxxi,Sigyyi,Sigxyi,error = solution.stresses(p6, t6, disp, material, qpe)
         parame = [Ene*young/(sig**2*lx**2)*thick, ki[0][0]/(sig*np.sqrt(math.pi*lx/2))*thick, max(error)[0]]
+        fig, grid = plt.subplots()
         plot.trisurf2d(fig, grid, p6, t6, eleind = 0, nodind = 0, line = [], point = [], parame = parame)
-        plt.show()
-        plt.pause(0.0001)
+        plt.show(); plt.pause(0.0001)
         p, t = rm.refinement( tipava, crapro, error, 0, 0, 'based on error' )
     
     
