@@ -1,7 +1,7 @@
 # Description: This script installs PorePy on a Ubuntu system (Ubuntu 19.10)
 # Beforce start, delete the directories $POREPY_DIR, $GMSH_DIR, $DIR_IN_PYTHONPATH and $HOME/porepy-env
 # Ref: https://github.com/keileg/porepy_intro/blob/master/porepy_install.sh
-# with the help from Hakkon, Sæunn and Porepy group member
+# with the help from Hakkon, Sæunn and Porepy group members
 # my computer name is hau. so remember to change by your computer name
 ## install python and porepy
 sudo apt-get update
@@ -58,7 +58,7 @@ cd porepy
 pip install -e .
 conda install spyder
 
-# restart terminal 
+# setup python path. restart terminal 
 atom ~/.bashrc
 export PYTHONPATH=/home/hau/porepy
 conda activate porepy
