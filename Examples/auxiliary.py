@@ -13,6 +13,11 @@ class AuxiFu():
         s = (l1+l2+l3)/2
         areatri = np.sqrt(s*(s-l1)*(s-l2)*(s-l3))     
         return areatri
+    def polygon_area(self, x, y): 
+        '''https://stackoverrun.com/vi/q/6706068'''
+        correction = x[:,-1] * y[:,0] - y[:,-1]* x[:,0]
+        main_area = np.sum(x[:,:-1] * y[:,1:], axis = 1) - np.sum(y[:,:-1] * x[:,1:], axis = 1)
+        return 0.5*np.abs(main_area + correction)
     def ismember(self, A, B):
         return [ np.sum(a == B) for a in A ]
     def norm(self, n):

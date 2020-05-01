@@ -37,3 +37,13 @@ def trisurf2d(fig, grid, p, t, eleind, nodind, line, point, parame):
             pi = point[i]
             if len(pi) > 0:
                 grid.plot(pi[0], pi[1],'ko')
+                
+def trisurf3d(fig, grid, p, value, t):
+    import matplotlib.tri as mtri
+    name_color_map = 'seismic';
+    ax = fig.gca(projection='3d');
+    x = p[:,0]
+    y = p[:,1]
+    z = value[:,0]
+    triang = mtri.Triangulation(x, y, t);
+    ax.plot_trisurf(triang, z, cmap = name_color_map, shade=True, linewidth=0.2)
