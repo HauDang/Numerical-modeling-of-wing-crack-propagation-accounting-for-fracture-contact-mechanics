@@ -3,6 +3,12 @@
 # Ref: https://github.com/keileg/porepy_intro/blob/master/porepy_install.sh
 # with the help from Hakkon, Sæunn and Porepy group members
 # my computer name is hau. so remember to change by your computer name
+## install atom
+sudo apt update
+sudo apt install software-properties-common apt-transport-https wget
+wget -q https://packagecloud.io/AtomEditor/atom/gpgkey -O- | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main"
+sudo apt install atom
 ## install python and porepy
 sudo apt-get update
 sudo apt install git
