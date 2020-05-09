@@ -38,11 +38,14 @@ rm gmsh-4.3.0-Linux64.tgz
 ## python config
 mkdir ${DIR_IN_PYTHONPATH}
 
+# Write the path to the gmsh binary to a file porepy_config.py
+echo "config = {\"gmsh_path\": \"$GMSH_RUN\" } " > $DIR_IN_PYTHONPATH/porepy_config.py
+
 ## install other ones
 wget 'https://raw.githubusercontent.com/keileg/polyhedron/master/polyhedron.py'
 mv polyhedron.py $DIR_IN_PYTHONPATH/robust_point_in_polyhedron.py
 
-## restart terminal, run the porepy test. show 102 errors
+## run the porepy test. show 102 errors
 cd $POREPY_DIR
 pytest test/unit test/integration
 
