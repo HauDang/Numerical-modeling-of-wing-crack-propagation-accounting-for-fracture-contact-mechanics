@@ -30,10 +30,10 @@ pip install numba vtk jupyter ipython
 pip install $POREPY_DIR
 
 ## install gmsh
-wget 'http://gmsh.info/bin/Linux/gmsh-4.3.0-Linux64.tgz' 
-tar xf gmsh-4.3.0-Linux64.tgz
-mv gmsh-4.3.0-Linux64 $GMSH_DIR
-rm gmsh-4.3.0-Linux64.tgz
+wget 'http://gmsh.info/bin/Linux/gmsh-4.5.6-Linux64.tgz' 
+tar xf gmsh-4.5.6-Linux64.tgz
+mv gmsh-4.5.6-Linux64 $GMSH_DIR
+rm gmsh-4.5.6-Linux64.tgz
 
 ## python config
 mkdir ${DIR_IN_PYTHONPATH}
