@@ -20,10 +20,11 @@ GMSH_DIR="$BASE_DIR/gmsh"
 GMSH_RUN="$GMSH_DIR/bin/gmsh"
 DIR_IN_PYTHONPATH="$BASE_DIR/python"
 
-python3.7 -m venv $HOME/porepy-env
+python3.6 -m venv $HOME/porepy-env ## check python version 3.6 or 3.7
 source $HOME/porepy-env/bin/activate
 pip install --upgrade pip
 git clone https://github.com/pmgbergen/porepy.git $POREPY_DIR
+sudo apt install python-pip
 pip install -r "$POREPY_DIR/requirements-dev.txt"
 pip install numba vtk jupyter ipython
 
