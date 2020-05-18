@@ -24,7 +24,7 @@ python3.8 -m venv $HOME/porepy-env ## check python version 3.6/3.7/3.8
 source $HOME/porepy-env/bin/activate
 pip install --upgrade pip
 git clone https://github.com/pmgbergen/porepy.git $POREPY_DIR
-sudo apt install python-pip
+sudo apt install python3-pip
 pip install -r "$POREPY_DIR/requirements-dev.txt"
 pip install numba vtk jupyter ipython
 
