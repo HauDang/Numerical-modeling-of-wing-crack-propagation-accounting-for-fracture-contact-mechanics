@@ -41,9 +41,10 @@ def activeset(p6, t6, qpe, disp, gap, possla, posmas, consla, conmas, material )
     
     bounor = norvec(p6,np.concatenate((possla.reshape(len(possla),1), posmas.reshape(len(posmas),1)), axis = 1))
     # bounor = norvec(p6,posnodc)
-    trax = (sigxx[possla]*bounor[:,0] + sigxy[possla]*bounor[:,1])*bounor[:,0]
-    tray = (sigxy[possla]*bounor[:,0] + sigyy[possla]*bounor[:,1])*bounor[:,1]
-    traction = trax + tray    
+    trax = (sigxx[possla]*bounor[:,0] + sigxy[possla]*bounor[:,1])
+    tray = (sigxy[possla]*bounor[:,0] + sigyy[possla]*bounor[:,1])
+    sig_trac = np.sign(trax*bounor[:,0] + tray*bounor[:,1])
+    traction = sig_trac*np.sqrt(trax**2 + tray**2)    
     nordis = (dispx[possla,0] - dispx[posmas,0])*bounor[:,0] + (dispy[possla,0] - dispy[posmas,0])*bounor[:,1]
     if len(gap) == 1:
         consla = possla[traction + material[2,2]*(-nordis - gap) < 0]
