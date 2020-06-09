@@ -7,7 +7,6 @@
 - Show up the deformation, energy and stress intensity fractor.
 
 # Reference
-For more details, please see in our paper:
-
+If you use these codes in your research, we ask you to cite the following publication:
 Hau Trung Dang, Eirik Keilegavlen, Inga Berre. Numerical modeling of wing crack propagation accounting for
-fracture contact mechanics. submitted to International Journal of Solids and Structures for publication
+fracture contact mechanics. submitted to International Journal of Solids and Structures for publication. https://arxiv.org/abs/2006.03623
