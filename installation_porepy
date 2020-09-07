@@ -70,6 +70,7 @@ conda install spyder
 
 # setup python path. restart terminal 
 atom ~/.bashrc
+# copy - paste two following lines at the end
 export PYTHONPATH=/home/hau/porepy
 conda activate porepy
 
