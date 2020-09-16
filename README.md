@@ -9,4 +9,4 @@
 # Reference
 If you use these codes in your research, we ask you to cite the following publication:
 Hau Trung Dang, Eirik Keilegavlen, Inga Berre. Numerical modeling of wing crack propagation accounting for
-fracture contact mechanics. submitted to International Journal of Solids and Structures for publication. https://arxiv.org/abs/2006.03623
+fracture contact mechanics. submitted to International Journal of Solids and Structures for publication. https://www.sciencedirect.com/science/article/pii/S0020768320303152?via%3Dihub
