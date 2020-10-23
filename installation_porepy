@@ -1,4 +1,5 @@
 # Description: This script installs PorePy on a Ubuntu system (Ubuntu 19.10)
+# Create a propy enviroment, then install prepy there
 # Beforce start, delete the directories $POREPY_DIR, $GMSH_DIR, $DIR_IN_PYTHONPATH and $HOME/porepy-env
 # Ref: https://github.com/keileg/porepy_intro/blob/master/porepy_install.sh
 # with the help from Hakkon, Sæunn and Porepy group members
@@ -9,11 +10,10 @@ sudo apt install software-properties-common apt-transport-https wget
 wget -q https://packagecloud.io/AtomEditor/atom/gpgkey -O- | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main"
 sudo apt install atom
-## install python and porepy
-sudo apt-get update
-sudo apt install git
-sudo apt install python3-tk
-sudo apt install python3-venv
+## install python virtualenv to install porepy
+sudo apt update
+sudo apt install python3.7-venv
+
 BASE_DIR="/home/hau"
 POREPY_DIR="$BASE_DIR/porepy"
 GMSH_DIR="$BASE_DIR/gmsh"
