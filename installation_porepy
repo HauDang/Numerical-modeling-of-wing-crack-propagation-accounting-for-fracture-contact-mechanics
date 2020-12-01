@@ -24,8 +24,9 @@ DIR_IN_PYTHONPATH="$BASE_DIR/python"
 python3.8 -m venv $HOME/porepy-env
 source $HOME/porepy-env/bin/activate
 pip install --upgrade pip
-cd porepy
+
 git clone https://github.com/pmgbergen/porepy.git
+cd porepy
 sudo apt install python3-pip
 git checkout master
 pip install -r requirements.txt
@@ -63,7 +64,7 @@ conda create --name porepy python=3.8
 
 conda activate porepy
 pip install pymetis
-cd porepy/scr
+cd porepy/src
 conda develop .
 conda install spyder
 
