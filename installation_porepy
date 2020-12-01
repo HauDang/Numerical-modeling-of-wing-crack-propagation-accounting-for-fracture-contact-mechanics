@@ -25,6 +25,13 @@ python3.8 -m venv $HOME/porepy-env
 source $HOME/porepy-env/bin/activate
 pip install --upgrade pip
 
+## install gmsh
+wget 'http://gmsh.info/bin/Linux/gmsh-4.5.6-Linux64.tgz' 
+tar xf gmsh-4.5.6-Linux64.tgz
+mv gmsh-4.5.6-Linux64 $GMSH_DIR
+rm gmsh-4.5.6-Linux64.tgz
+
+
 git clone https://github.com/pmgbergen/porepy.git
 cd porepy
 sudo apt install python3-pip
@@ -33,12 +40,6 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 pip install numba vtk jupyter ipython
 pip install .
-
-## install gmsh
-wget 'http://gmsh.info/bin/Linux/gmsh-4.5.6-Linux64.tgz' 
-tar xf gmsh-4.5.6-Linux64.tgz
-mv gmsh-4.5.6-Linux64 $GMSH_DIR
-rm gmsh-4.5.6-Linux64.tgz
 
 ## python config
 mkdir ${DIR_IN_PYTHONPATH}
