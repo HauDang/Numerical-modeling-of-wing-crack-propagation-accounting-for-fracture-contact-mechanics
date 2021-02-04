@@ -81,5 +81,8 @@ sudo apt install jupyter-notebook
 # run scrift by spyder. open terminal
 spyder
 
+# pull the lastest version
+git reset -- hard
+git pull
 
 
