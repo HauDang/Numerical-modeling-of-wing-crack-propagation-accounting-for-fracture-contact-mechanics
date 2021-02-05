@@ -82,7 +82,7 @@ sudo apt install jupyter-notebook
 spyder
 
 # pull the lastest version
-git reset -- hard
+git reset -- hard # delete the local changes 
 git pull
 
 
