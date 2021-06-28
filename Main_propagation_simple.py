@@ -9,7 +9,7 @@ import mixedmode_fracture_analysis as analysis
 class ModelSetup():
     def __init__(self):
         self.length_scale = 1
-        nn = 4
+        nn = 1
         self.mesh_size = 0.005*self.length_scale*nn
         self.mesh_args = { "mesh_size_frac": self.mesh_size, "mesh_size_min": 1 * self.mesh_size, "mesh_size_bound": 1/(-2.5*nn + 15)*self.length_scale} 
 
@@ -33,7 +33,7 @@ class ModelSetup():
     def set_rock(self):
         self.YOUNG = 40e9
         self.POISSON = 0.2
-        self.SH = 15E6
+        self.SH = -15E6
         self.Sh = -7E6*0
         self.material = dict([('YOUNG', self.YOUNG), ('POISSON', self.POISSON), ('KIC', 0.4e6) ]) 
     def create_grid(self):
@@ -51,9 +51,10 @@ class ModelSetup():
         self.min_face = np.copy(self.mesh_size) #np.min(g2d.face_areas)
         self.min_cell = np.min(g2d.cell_volumes)
         self.p, self.t = analysis.adjustmesh(g2d, self.tips, self.GAP)
+        self.displacement = self.p*0
         self.fa_no =  g2d.face_nodes.indices.reshape((2, g2d.num_faces), order='f').T 
         return gb
-    def boundary_condition(self, p):
+    def boundary_condition(self, p, t):
         tol = np.copy(self.GAP)
         cbl = np.intersect1d(np.where(p[:,0] < np.min(p[:,0]) + tol)[0], 
                              np.where(p[:,1] < np.min(p[:,1]) + tol)[0])[0]
@@ -70,20 +71,11 @@ class ModelSetup():
         lefind = analysis.p2index(p,nodaro[[0,3],:]) 
         rigind = analysis.p2index(p,nodaro[[1,2],:])  
         
-        # dof_dir = np.concatenate((botind*2, botind*2 + 1,
-        #                           lefind*2, lefind*2 + 1,
-        #                           topind*2+1, rigind*2), axis = 0)
-        # val_dir = np.concatenate((botind*0, botind*0,
-        #                           lefind*0, lefind*0,
-        #                           topind*0 - 0.001, rigind*0 - 0.002), axis = 0)
         
         dof_dir = np.concatenate((botind*2 + 1,
                                   lefind*2), axis = 0)
         val_dir = np.concatenate((botind*0,
                                   lefind*0), axis = 0)
-        
-        # dof_neu = []
-        # val_neu = []
         
         
         dof_neu = np.empty(shape = (len(topind) + len(rigind), 2), dtype = np.int32)
@@ -91,9 +83,42 @@ class ModelSetup():
         
         dof_neu[0:len(topind),0] = topind*2; dof_neu[0:len(topind),1] = topind*2 + 1
         dof_neu[len(topind)::,0] = rigind*2; dof_neu[len(topind)::,1] = rigind*2 + 1
+        bar = np.concatenate((t[:,[0,1]], t[:,[1,2]], t[:,[2,3]], t[:,[3,4]], t[:,[4,5]], t[:,[0,5]]), axis = 0)
+        bar = np.unique(bar,axis = 0)
         
-        val_neu[0:len(topind),1] = self.Sh
-        val_neu[len(topind)::,0] = self.SH
+        midpoi = np.unique(t[:,[1, 3, 5]])
+        
+        weitop = np.zeros(len(topind))
+        for i in range(len(topind)):
+            indexi = np.intersect1d(np.setdiff1d(np.unique(bar[np.where(bar == topind[i])[0],:]), topind[i]), topind)
+            if len(indexi) == 1:
+                if len(np.setdiff1d(topind[i], midpoi)) > 0:
+                    weitop[i] = np.sqrt(np.sum((p[indexi,:] - p[topind[i],:])**2))/4
+                else:
+                    weitop[i] = np.sqrt(np.sum((p[indexi,:] - p[topind[i],:])**2))/2
+            if len(indexi) == 2:
+                if len(np.setdiff1d(topind[i], midpoi)) > 0:
+                    weitop[i] = np.sqrt(np.sum((p[indexi[0],:] - p[indexi[1],:])**2))/4
+                else:
+                    weitop[i] = np.sqrt(np.sum((p[indexi[0],:] - p[indexi[1],:])**2))/2
+                
+        weirig = np.zeros(len(rigind))
+        for i in range(len(rigind)):
+            indexi = np.intersect1d(np.setdiff1d(np.unique(bar[np.where(bar == rigind[i])[0],:]), rigind[i]), rigind)
+            if len(indexi) == 1:
+                if len(np.setdiff1d(rigind[i], midpoi)) > 0:
+                    weirig[i] = np.sqrt(np.sum((p[indexi,:] - p[rigind[i],:])**2))/4
+                else:
+                    weirig[i] = np.sqrt(np.sum((p[indexi,:] - p[rigind[i],:])**2))/2
+            if len(indexi) == 2:
+                if len(np.setdiff1d(rigind[i], midpoi)) > 0:
+                     weirig[i] = np.sqrt(np.sum((p[indexi[0],:] - p[indexi[1],:])**2))/4
+                else:
+                     weirig[i] = np.sqrt(np.sum((p[indexi[0],:] - p[indexi[1],:])**2))/2
+               
+                
+        val_neu[0:len(topind),1] = self.Sh*weitop
+        val_neu[len(topind)::,0] = self.SH*weirig
             
         self.bc_type = dict([('dir', dof_dir), ('neu', dof_neu) ]) 
         self.bc_value = dict([('dir', val_dir), ('neu', val_neu) ]) 
@@ -119,18 +144,18 @@ class ModelSetup():
         else:
             tips_actualy = tips
             
-        pref, tref = analysis.refinement( self.p, self.t, self.p, self.t, self.fracture, tips_actualy, self.min_cell, self.min_face, self.GAP)
+        self.p, self.t = analysis.refinement( self.p, self.t, self.p, self.t, self.fracture, tips_actualy, self.min_cell, self.min_face, self.GAP)
 
-        pref, tref, fn, cf, iniang = analysis.do_remesh(pref, tref, self.min_face, self.fracture, self.GAP)
+        self.p, self.t, fn, cf, iniang = analysis.do_remesh(self.p, self.t, self.min_face, self.fracture, self.GAP)
         
-        p6, t6, qpe = analysis.t3tot6(pref, tref, tips)
-        self.boundary_condition(p6)
+        p6, t6, qpe = analysis.t3tot6(self.p, self.t, tips)
+        self.boundary_condition(p6, t6)
         
         disp = analysis.FEM_solution(self.material, p6, t6, qpe, self.bc_type, self.bc_value)
         
-        disp2 = disp.reshape((p6.shape[0],2))
+        self.displacement = disp.reshape((p6.shape[0],2))[0:self.p.shape[0], :]
 
-        
+        # analysis.trisurf( p6 + disp.reshape((p6.shape[0],2))*1e4, t6, infor = None)
         Gi, ki, keq, craang = analysis.SIF(p6, t6, disp, self.material['YOUNG'],  self.material['POISSON'], qpe )
         print(keq)
         ladv = np.zeros(tips.shape[0])
@@ -157,7 +182,7 @@ class ModelSetup():
                 tips0[index,:] = newfrac[i][1,:]
         return keq, ki, newfrac, tips0, p6, t6, disp
     def split_face(self, newfrac = None):
-        if newfrac is not None:
+        if len(newfrac) > 0:
             dis = []
             for i in range(len(newfrac)):
                 tipinew = newfrac[i][1,:]
@@ -167,18 +192,18 @@ class ModelSetup():
                                         np.abs(tipinew[1] - self.box['ymax'])]))
                 dis.append(disi)
             if np.min(dis) > self.min_face*5:  
-                p, t, fn, cf, iniang = analysis.do_remesh(self.p, self.t, self.min_face, self.fracture, self.GAP, newfrac = newfrac)   
+                # p, t, fn, cf, iniang = analysis.do_remesh(self.p, self.t, self.min_face, self.fracture, self.GAP, newfrac = newfrac)   
                 tip_prop = np.empty(shape=(len(newfrac),2))
                 new_tip = np.empty(shape=(len(newfrac),2))
                 for i in range(len(newfrac)):
                     # dis = np.sqrt( (p[:,0] - newfrac[i][0,0])**2 + (p[:,1] - newfrac[i][0,1])**2 )
                     # ind0 = np.argmin(dis)
-                    dis = np.sqrt( (p[:,0] - newfrac[i][1,0])**2 + (p[:,1] - newfrac[i][1,1])**2 )
+                    dis = np.sqrt( (self.p[:,0] - newfrac[i][1,0])**2 + (self.p[:,1] - newfrac[i][1,1])**2 )
                     ind1 = np.argmin(dis)
-                    p[ind1,:] = newfrac[i][1,:]
+                    self.p[ind1,:] = newfrac[i][1,:]
                     tip_prop[i,:] = newfrac[i][0,:]
                     new_tip[i,:] = newfrac[i][1,:]
-                self.p, self.t = analysis.splitelement( p, t, self.fracture, newfrac, self.GAP )    
+                self.p, self.t, self.displacement = analysis.splitelement( self.p, self.t, self.fracture, newfrac, self.GAP,solution = self.displacement)    
                 frac_aft = []            
                 for j, fracturej in enumerate(self.fracture):
                     for k, tip_propi in enumerate(tip_prop):
@@ -197,15 +222,14 @@ TOL = np.finfo(float).eps*1E8
 setup = ModelSetup() 
 setup.prepare_simulation()  
 for ii in range(20):
+    if ii == 4:
+        stop = 1
     setup.propagation_process()
-# keq, ki, newfrac, tips0, p6, t6, disp = setup.evaluate_propagation()
-# disp2 = disp.reshape((p6.shape[0],2))
-# analysis.trisurf( p6 + disp2*5e0, t6, point = tips0)
+    # analysis.trisurf( setup.p + setup.displacement*1e1*0, setup.t, point = setup.fracture[0]) #point = setup.fracture[0], infor = None
 
 
+analysis.trisurf( setup.p + setup.displacement*1e3, setup.t) #point = setup.fracture[0], infor = None
 
-
-analysis.trisurf( setup.p, setup.t, point = setup.fracture[0], infor = None)
 
 
 
