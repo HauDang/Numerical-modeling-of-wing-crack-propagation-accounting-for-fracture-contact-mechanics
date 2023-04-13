@@ -86,3 +86,12 @@ git reset -- hard # delete the local changes
 git pull
 
 
+pip install numpy
+pip install cython
+pip install future
+pip install matplotlib
+pip install meshio
+pip install networkx
+pip install numba 1.1.3
+pip install shapely
+pip install sympy
